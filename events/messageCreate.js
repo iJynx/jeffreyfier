@@ -46,6 +46,12 @@ module.exports = async (client, message) => {
   // Get the user or member's permission level from the elevation
   const level = permlevel(message);
 
+  // if level is 0 dont do anything
+  if (level === 0) {
+    return
+  }
+
+
   // Check whether the command, or alias, exist in the collections defined
   // in app.js.
   const cmd = container.commands.get(command) || container.commands.get(container.aliases.get(command));

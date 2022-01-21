@@ -27,7 +27,7 @@ module.exports = async (client, reaction, user) => {
         // if both exist
         if (tickReactions && crossReactions) {
             // if cross is larger than tick + 5
-            if (crossReactions > tickReactions + 5) {
+            if (crossReactions > tickReactions + 4) {
                 // get message embed
                 const embed = message.embeds[0];
                 // get message author
@@ -70,7 +70,6 @@ module.exports = async (client, reaction, user) => {
 
     // get author id
     const authorID = message.author.id;
-
     const userObj = await UserModel.findOne({ userID: authorID });
 
     // get roles of authorID
@@ -78,7 +77,6 @@ module.exports = async (client, reaction, user) => {
 
     // if author contains any of the godRoles, or doesnt have member role, quit
     if (roles.some(r => config.godRoles.includes(r)) || !roles.includes(config.memberRole)) {
-        // logger.log(`${author} has a good role or is already jeffried, skipping.`, "cmd");
         return;
     }
 
@@ -92,28 +90,20 @@ module.exports = async (client, reaction, user) => {
             reactees: { [reactee]: 1 },
         });
         newUser.save();
-        // logger.log(`${author} has been added to the database`, "log");
     } else {
         // if reactee has less than 3 reactions add it, else log it
         if (!userObj.reactees[reactee]) {
-            // logger.log("Reactee added", "log");
             userObj.reactees[reactee] = 0;
         }
         const reacteeReacts = userObj.reactees[reactee];
-        // logger.log(`${reactee} has ${reacteeReacts} reactions`, "log");
         if (userObj.reactees[reactee] >= settings.maxReactions) {
-            // logger.log("has reacted too many times, will be exiting", "log");
             return;
         }
 
         userObj.reactees[reactee] = reacteeReacts + 1;
 
-        // logger.log(`${author} has reacted to ${reactee}`, "log");
-
-        // logger.log(`${author} has ${userObj.jeffreyReactions + 1} jeffrey reactions`, "log");
         userObj.jeffreyReactions++;
 
-        // logger.log(`${JSON.stringify(userObj)}`, "log");
         // add to controversial messages
         if (!userObj.controversialMessages[message.id]) {
             userObj.controversialMessages[message.id] = 0
@@ -134,6 +124,8 @@ module.exports = async (client, reaction, user) => {
             // react to message with party emote
             directResponse.react("🎉");
 
+            // send message to author telling them they've been automatically jeffried
+            await authorAt.send(`You have been automatically jeffrified for getting ${userObj.jeffreyReactions} jeffrey votes. Please wait for mods to revoke this or for the council will now vote...`);
 
             // add role jeffreyRole from config
             message.guild.members.cache.get(authorID).roles.add(config.jeffreyRole);
@@ -149,6 +141,8 @@ module.exports = async (client, reaction, user) => {
             // get log channel based on ID
             const jeffreyLogsChannel = await message.guild.channels.cache.find(channel => channel.id === config.jeffreyLog);
             if (jeffreyLogsChannel) {
+                logger.log(`${author} has been jeffrified for ${userObj.jeffreyReaction} offences.`, "log");
+
                 // get reactee's name
                 const reacteeName = message.guild.members.cache.get(reactee).displayName;
                 //  mention reactee
@@ -170,10 +164,10 @@ module.exports = async (client, reaction, user) => {
                 const topMessages = Object.keys(userObj.controversialMessages).sort((a, b) => userObj.controversialMessages[b] - userObj.controversialMessages[a]).slice(0, 6);
                 const topMessagesArray = [];
                 for (const messageID of topMessages) {
-                    const Cmessage = await message.channel.messages.fetch(messageID);
+                    const MessageObj = await message.channel.messages.fetch(messageID);
                     topMessagesArray.push({
-                        message: Cmessage.content,
-                        link: `https://discordapp.com/channels/${Cmessage.guild.id}/${Cmessage.channel.id}/${Cmessage.id}`,
+                        message: MessageObj.content,
+                        link: `https://discordapp.com/channels/${MessageObj.guild.id}/${MessageObj.channel.id}/${MessageObj.id}`,
                         count: userObj.controversialMessages[messageID],
                     });
                 }
@@ -185,10 +179,6 @@ module.exports = async (client, reaction, user) => {
                     }
                 }
 
-                // prepare top messages in inline fields
-                // logger.log(topMessages, "log");
-
-                // prepare vote embed
                 const voteEmbed = new MessageEmbed()
                     .setColor('#FF3333')
                     .setTitle(`[VOTE] Was ${author}'s jeffriefication justified? **(${userObj.jeffreyOffences})**`)
@@ -218,8 +208,6 @@ module.exports = async (client, reaction, user) => {
                 await voteMessage.react('❌');
             }
         }
-        // new userObj value
-        // logger.log(`${JSON.stringify(userObj)}`, "log");
         await userObj.markModified('reactees');
         await userObj.markModified('controversialMessages');
         await userObj.save();

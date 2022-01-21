@@ -18,21 +18,26 @@ module.exports = async (client, reaction, user) => {
     const message = await reaction.message.fetch();
     const authorID = message.author.id;
     const authorObj = await UserModel.findOne({ userID: authorID });
+    try {
 
-    // decrement jeffreyReactions and reactee and controversialMessages
-    authorObj.jeffreyReactions--;
+        // decrement jeffreyReactions and reactee and controversialMessages
+        authorObj.jeffreyReactions--;
 
-    if (authorObj.controversialMessages[message.id])
-        authorObj.controversialMessages[message.id]--;
+        if (authorObj.controversialMessages[message.id])
+            authorObj.controversialMessages[message.id]--;
 
-    // if reactee has less than 3 reactions remove it, else log it
-    if (authorObj.reactees[reactee]) {
-        authorObj.reactees[reactee]--;
-    }
+        // if reactee has less than 3 reactions remove it, else log it
+        if (authorObj.reactees[reactee]) {
+            authorObj.reactees[reactee]--;
+        }
 
-    // if jeffreyReactions is less than 0, remove the user
-    if (authorObj.jeffreyReactions < 0) {
-        authorObj.jeffreyReactions = 0;
+        // if jeffreyReactions is less than 0, remove the user
+        if (authorObj.jeffreyReactions < 0) {
+            authorObj.jeffreyReactions = 0;
+        }
+
+    } catch (err) {
+        logger.log(`looks like someone unreacted to a disciple`, "error");
     }
 
 
