@@ -15,9 +15,7 @@ module.exports = async (client, reaction, user) => {
     if (reaction.emoji.identifier == tick || reaction.emoji.identifier == cross) {
         // check reaction is in jeffreyLog channel 
         // check reaction isnt by a bot
-        console.log('1')
         if (reaction.message.channel.id != config.jeffreyLog || user.bot) return;
-        console.log('2')
 
         // find reactions by reactee on message
         const message = await reaction.message.fetch();
@@ -210,7 +208,7 @@ module.exports = async (client, reaction, user) => {
                     )
                     .setThumbnail(offenderProfile)
                     .setTimestamp()
-                    .setAuthor(`${authorID}`, 'https://cdn.discordapp.com/avatars/825962224493264896/f2177b45e18cc92b06c9706acc6708bf.png?size=1024', 'https://twitter.com/jynx_i')
+                    .setAuthor(`${authorID}`, 'https://yt3.ggpht.com/E0JWTeCC-h9UMNFojHIKHblClsQM_B6oQtpXXOVggkIt6MngkWoJ-G27i2O78CFlqkKitfUan3o=s88-c-k-c0x00ffffff-no-rj', 'https://www.youtube.com/c/Hamza97')
                     .setFooter('React with ✅ if you think it\'s justified and ❌ if it was not.');
                 // send message to disciple-vote channel and get the message
                 const voteMessage = await jeffreyLogsChannel.send({ embeds: [voteEmbed] });
