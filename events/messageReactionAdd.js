@@ -1,4 +1,4 @@
-const logger = require("Logger");
+const logger = require("../modules/Logger");
 const { getSettings, permlevel } = require("../modules/functions.js");
 const config = require("../config.js");
 const mongoose = require('mongoose');
@@ -101,9 +101,10 @@ module.exports = async (client, reaction, user) => {
         }
 
         userObj.reactees[reactee] = reacteeReacts + 1;
+        const authorAt = message.author;
 
         userObj.jeffreyReactions++;
-
+        console.log("1" + authorID);
         // add to controversial messages
         if (!userObj.controversialMessages[message.id]) {
             userObj.controversialMessages[message.id] = 0
@@ -118,14 +119,17 @@ module.exports = async (client, reaction, user) => {
 
         if (userObj.jeffreyReactions >= threshold) {
             // author at
-            const authorAt = await client.users.fetch(authorID);
 
             const directResponse = await message.channel.send(`${authorAt} has officially been jeffrified for getting ${userObj.jeffreyReactions} jeffrey votes. The council will now vote...`);
             // react to message with party emote
             directResponse.react("🎉");
+            try {
 
             // send message to author telling them they've been automatically jeffried
             await authorAt.send(`You have been automatically jeffrified for getting ${userObj.jeffreyReactions} jeffrey votes. Please wait for mods to revoke this or for the council will now vote...`);
+            }   catch  {
+                logger.log("cant send dm to user")
+            }
 
             // add role jeffreyRole from config
             message.guild.members.cache.get(authorID).roles.add(config.jeffreyRole);
@@ -140,8 +144,11 @@ module.exports = async (client, reaction, user) => {
             // add log message in logs channel
             // get log channel based on ID
             const jeffreyLogsChannel = await message.guild.channels.cache.find(channel => channel.id === config.jeffreyLog);
+            console.log("2" + authorID);
+
             if (jeffreyLogsChannel) {
                 logger.log(`${author} has been jeffrified for ${userObj.jeffreyReaction} offences.`, "log");
+                console.log("3" + authorID);
 
                 // get reactee's name
                 const reacteeName = message.guild.members.cache.get(reactee).displayName;
@@ -178,6 +185,7 @@ module.exports = async (client, reaction, user) => {
                         message.message = message.message.slice(0, 300) + "...";
                     }
                 }
+                console.log("4" + authorID);
 
                 const voteEmbed = new MessageEmbed()
                     .setColor('#FF3333')
@@ -206,6 +214,8 @@ module.exports = async (client, reaction, user) => {
                 // add reactions
                 await voteMessage.react('✅');
                 await voteMessage.react('❌');
+                console.log("5" + authorID);
+
             }
         }
         await userObj.markModified('reactees');

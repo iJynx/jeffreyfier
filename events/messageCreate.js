@@ -46,11 +46,10 @@ module.exports = async (client, message) => {
   // Get the user or member's permission level from the elevation
   const level = permlevel(message);
 
-  // if level is 0 dont do anything
-  if (level === 0) {
+  // // if level is 0 and not in bot commands
+  if (level === 0 && message.channel.id != config.commandsChannel) {
     return
   }
-
 
   // Check whether the command, or alias, exist in the collections defined
   // in app.js.

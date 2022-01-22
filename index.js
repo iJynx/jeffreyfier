@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+// get process env password
+require('dotenv').config();
 
 mongoose.connect(`mongodb+srv://Root:${process.env.MONGO_PASSWORD}@cluster0.lspds.mongodb.net/jeffreyfier?retryWrites=true&w=majority`, {}).then(() => {
   const logger = require("./modules/Logger.js");

@@ -1,4 +1,4 @@
-const logger = require("Logger");
+const logger = require("../modules/Logger");
 const { getSettings, permlevel } = require("../modules/functions.js");
 const config = require("../config.js");
 const mongoose = require('mongoose');
@@ -12,10 +12,16 @@ module.exports = async (client, reaction, user) => {
     if (reaction.emoji.identifier != config.jeffreyReaction)
         return
 
+    // check if the message is a message from one of the god roles
+    const message = await reaction.message.fetch();
+    
+    // if user has god role ignore
+    if (message.member.roles.cache.some(role => config.godRoles.includes(role.id)))
+        return;
+
     logger.log(`${reaction.message.id} was removed from ${reaction.message.id}`, "cmd");
 
     // get message object
-    const message = await reaction.message.fetch();
     const authorID = message.author.id;
     const authorObj = await UserModel.findOne({ userID: authorID });
     try {
@@ -36,6 +42,13 @@ module.exports = async (client, reaction, user) => {
             authorObj.jeffreyReactions = 0;
         }
 
+        // if there are any controversial messages with a count of 0, remove them
+        const keys = Object.keys(authorObj.controversialMessages);
+        for (const key of keys) {
+            if (authorObj.controversialMessages[key] == 0) {
+                delete authorObj.controversialMessages[key];
+            }
+        }
     } catch (err) {
         logger.log(`looks like someone unreacted to a disciple`, "error");
     }
