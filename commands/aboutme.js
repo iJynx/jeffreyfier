@@ -1,7 +1,4 @@
-const { version } = require("discord.js");
 const { codeBlock } = require("@discordjs/builders");
-const { DurationFormatter } = require("@sapphire/time-utilities");
-const durationFormatter = new DurationFormatter();
 
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
   const info = codeBlock("asciidoc", `
@@ -11,12 +8,24 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   
   Disciples will then see the most controversial messages and decide if the Jeffrey vote was fair or not. You get three strikes being a Jeffrey and then it's a ban.
 `);
-  await interaction.reply(info);
+  user_person = interaction.author;
+  await user_person.send(info);
+  console.log(`DM'd aboutme to: ${user_person}`);
+  // await interaction.author.reply(info);
 };
 
-exports.commandData = {
+
+exports.conf = {
+  enabled: true,
+  guildOnly: false,
+  aliases: [],
+  permLevel: "User"
+};
+
+
+exports.help = {
   name: "aboutme",
+  category: "Miscellaneous",
   description: "Explains the fucntionality of the bot.",
-  options: [],
-  defaultPermission: true,
+  usage: "aboutme"
 };
