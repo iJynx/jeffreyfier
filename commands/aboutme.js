@@ -1,5 +1,4 @@
 const { codeBlock } = require("@discordjs/builders");
-const logger = require("../modules/Logger");
 
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
   const info = codeBlock("asciidoc", `
