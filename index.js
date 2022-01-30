@@ -1,9 +1,16 @@
 const mongoose = require('mongoose');
+const logger = require("./modules/Logger.js");
 // get process env password
 require('dotenv').config();
 
-mongoose.connect(`mongodb+srv://Root:${process.env.MONGO_PASSWORD}@cluster0.lspds.mongodb.net/jeffreyfier?retryWrites=true&w=majority`, {}).then(() => {
-  const logger = require("./modules/Logger.js");
+const mongoURI = process.env.MONGO_PASSWORD 
+  ? `mongodb+srv://Root:${process.env.MONGO_PASSWORD}@cluster0.lspds.mongodb.net/jeffreyfier?retryWrites=true&w=majority`
+  : process.env.MONGO_URI;
+
+
+if (process.env.MONGO_PASSWORD) logger.warn("It's recommended to use MONGO_URI instead of MONGODB_PASSWORD");
+
+mongoose.connect(mongoURI, {}).then(() => {
   logger.log('Connected to MongoDB');
 
   if (Number(process.version.slice(1).split(".")[0]) < 16) throw new Error("Node 16.x or higher is required. Update Node on your system.");
@@ -41,8 +48,7 @@ mongoose.connect(`mongodb+srv://Root:${process.env.MONGO_PASSWORD}@cluster0.lspd
     levelCache
   };
 
-  // We're doing real fancy node 8 async/await stuff here, and to do that
-  // we need to wrap stuff in an anonymous function. It's annoying but it works.
+  // Using an IIFE to run async code.
 
   const init = async () => {
 
