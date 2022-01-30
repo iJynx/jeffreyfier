@@ -50,7 +50,7 @@ mongoose.connect(mongoURI, {}).then(() => {
 
   // Using an IIFE to run async code.
 
-  const init = async () => {
+  (async () => {
 
     // Here we load **commands** into memory, as a collection, so they're accessible
     // here and everywhere else.
@@ -96,7 +96,5 @@ mongoose.connect(mongoURI, {}).then(() => {
     client.login();
 
     // End top-level async/await function.
-  };
-
-  init();
+  })();
 });
