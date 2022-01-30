@@ -14,7 +14,6 @@ mongoose.connect(mongoURI, {}).then(() => {
   logger.log('Connected to MongoDB');
 
   if (Number(process.version.slice(1).split(".")[0]) < 16) throw new Error("Node 16.x or higher is required. Update Node on your system.");
-  require("dotenv").config();
 
   // Load up the discord.js library
   const { Client, Collection } = require("discord.js");
