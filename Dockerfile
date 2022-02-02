@@ -1,6 +1,6 @@
 ###############################################################################
 ## Stage one
-FROM node:16-alpine as builder
+FROM node:16.13.2-alpine3.15 as builder
 
 # Install build essentials
 RUN apk --update add --no-cache --virtual .build-deps build-base python3 bash
@@ -12,11 +12,11 @@ WORKDIR /usr/src/bot
 
 # Copy and Install our bot
 COPY package.json /usr/src/bot
-RUN npm install --production
+RUN npm install --only=production
 ##############################################################################
 
 ## Stage two
-FROM node:16-alpine as main-stage
+FROM node:16.13.2-alpine3.15 as main-stage
 ENV NODE_ENV=production
 
 # Add dumb-init to support signals
