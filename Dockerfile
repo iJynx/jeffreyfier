@@ -28,8 +28,6 @@ USER node
 RUN mkdir -p /home/node/bot
 WORKDIR /home/node/bot
 
-# Added dumb-init for clean exits
-
 # Copy bot from previous build to current build stage
 COPY --chown=node . .
 COPY --from=builder --chown=node /usr/src/bot/node_modules /home/node/bot/node_modules
