@@ -2,8 +2,7 @@ const { version } = require("discord.js");
 const { codeBlock } = require("@discordjs/builders");
 const { DurationFormatter } = require("@sapphire/time-utilities");
 const durationFormatter = new DurationFormatter();
-const UserModel = require('../models/userModel');
-
+const UserModel = require("../models/userModel");
 
 function convertHumanReadableTimeToSeconds(target) {
   const time = target.split(" ");
@@ -34,12 +33,15 @@ function convertHumanReadableTimeToSeconds(target) {
   return timeInSeconds;
 }
 
-exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
+exports.run = async (client, message, args, level) => {
+  // eslint-disable-line no-unused-vars
 
   // if no args then cancel
   if (!args[0]) return message.reply("Please provide a user to blacklist.");
-  if (!args[1]) return message.reply("Please provide a duration for the blacklist.");
-  if (!args[2]) return message.reply("Please provide a reason for the blacklist.");
+  if (!args[1])
+    return message.reply("Please provide a duration for the blacklist.");
+  if (!args[2])
+    return message.reply("Please provide a reason for the blacklist.");
 
   // get the user to blacklist
   let userID = message.mentions.users.first();
@@ -63,15 +65,14 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
       reactees: {},
       blacklist: {
         endTime: 0,
-        reason: ""
-      }
-    })
+        reason: "",
+      },
+    });
   }
 
   // if user is already blacklisted then cancel
-  if (userObj.blacklist.endTime > Date.now()) return message.reply("That user is already blacklisted.");
-
-  
+  if (userObj.blacklist.endTime > Date.now())
+    return message.reply("That user is already blacklisted.");
 
   // get the reason for the blacklist
   const reason = args.slice(2).join(" ");
@@ -85,12 +86,15 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
     const user = client.users.cache.get(banVictim);
     if (!user) return message.reply("That user doesn't exist!");
 
-    if (user.id === message.author.id) return message.reply("You can't ban yourself!");
+    if (user.id === message.author.id)
+      return message.reply("You can't ban yourself!");
     if (user.id === client.user.id) return message.reply("I can't ban myself!");
     // ban them
     const reason = args.slice(1).join(" ") || "No reason provided";
     message.guild.members.ban(user, { reason: reason });
-    message.reply(`${user.tag} has been banished from the lands. Don't need to worry about him no more.`);
+    message.reply(
+      `${user.tag} has been banished from the lands. Don't need to worry about him no more.`
+    );
   } else {
     message.reply("You need to specify a user to ban.");
   }
@@ -100,12 +104,12 @@ exports.conf = {
   enabled: true,
   guildOnly: false,
   aliases: ["blacklist"],
-  permLevel: "Moderator"
+  permLevel: "Moderator",
 };
 
 exports.help = {
   name: "blacklist",
   category: "Admin",
   description: "Blacklists user",
-  usage: "blacklist"
+  usage: "blacklist",
 };

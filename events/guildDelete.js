@@ -5,7 +5,7 @@ const { settings } = require("../modules/settings.js");
 
 module.exports = (client, guild) => {
   if (!guild.available) return; // If there is an outage, return.
-  
+
   logger.log(`[GUILD LEAVE] ${guild.id} removed the bot.`);
 
   // If the settings Enmap contains any guild overrides, remove them.
