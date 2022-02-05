@@ -27,21 +27,28 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
         // offender profile picture
         const offenderProfile = author.displayAvatarURL({ format: "png", dynamic: true, size: 1024 });
 
+
+        
         const topMessages = Object.keys(userObj.controversialMessages).sort((a, b) => userObj.controversialMessages[b] - userObj.controversialMessages[a]).slice(0, 6);
         const topMessagesArray = [];
-        for (const messageID of topMessages) {
+
+        for (const messageFDB of topMessages) {
             try {
-                const MessageObj = await message.channel.messages.fetch(messageID);
+                const messageID = messageFDB.split("-")[1];
+                const channelID = messageFDB.split("-")[0];
+
+
+                const MessageObj = await message.guild.channels.cache.get(channelID).messages.fetch(messageID);
                 topMessagesArray.push({
                     message: MessageObj.content,
                     link: `https://discordapp.com/channels/${MessageObj.guild.id}/${MessageObj.channel.id}/${MessageObj.id}`,
-                    count: userObj.controversialMessages[messageID],
+                    count: userObj.controversialMessages[messageFDB],
                 });
             } catch {
                 topMessagesArray.push({
-                    message: "Message deleted...",
+                    message: "Error loading message. Probably deleted.",
                     link: "",
-                    count: userObj.controversialMessages[messageID],
+                    count: userObj.controversialMessages[messageFDB],
                 });
             }
         }
@@ -58,7 +65,7 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
             .setTitle(`${author}'s Jeffrey stats`)
             .setDescription(`This account has ${userObj.jeffreyReactions} reactions and are ${overrides.jeffreyThreshold - userObj.jeffreyReactions} reactions from becoming a Jeffrey. They have ${userObj.jeffreyOffences} previous offence(s).
 
-            ${topMessagesArray.length == 0 ? "Here are their most controversial messages:" : "They have no controversial messaged :D. Keep it up!"}`)
+            "Here are their most controversial messages:`)
             // render top 6 messages
             .addFields(...[
                 topMessagesArray.map(m => {

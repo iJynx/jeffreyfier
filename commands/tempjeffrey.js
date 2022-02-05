@@ -5,47 +5,42 @@ const config = require("../config");
 const { settings } = require("../modules/settings.js");
 
 function convertHumanReadableTimeToSeconds(target) {
-  // eg 24h -> 86400
-  // eg 1d -> 86400
-  // eg 1y -> 31536000
-  // eg 1m 1d -> 86401
-  // eg 5m -> 300
-
   const time = target.split(" ");
   let timeInSeconds = 0;
   for (const timeUnit of time) {
-    const unit = timeUnit.slice(-1);
-    const value = parseInt(timeUnit.slice(0, -1));
-    switch (unit) {
-      case "s":
-        timeInSeconds += value;
-        break;
-      case "m":
-        timeInSeconds += value * 60;
-        break;
-      case "h":
-        timeInSeconds += value * 60 * 60;
-        break;
-      case "d":
-        timeInSeconds += value * 60 * 60 * 24;
-        break;
-      case "y":
-        timeInSeconds += value * 60 * 60 * 24 * 365;
-        break;
-      default:
-        throw new Error("Invalid time unit.");
-    }
+      const unit = timeUnit.slice(-1);
+      const value = parseInt(timeUnit.slice(0, -1));
+      switch (unit) {
+          case "s":
+              timeInSeconds += value;
+              break;
+          case "m":
+              timeInSeconds += value * 60;
+              break;
+          case "h":
+              timeInSeconds += value * 60 * 60;
+              break;
+          case "d":
+              timeInSeconds += value * 60 * 60 * 24;
+              break;
+          case "y":
+              timeInSeconds += value * 60 * 60 * 24 * 365;
+              break;
+          default:
+              throw new Error("Invalid time unit.");
+      }
   }
   return timeInSeconds;
 }
 
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
+  console.log("YEs")
   if (args[0]) {
     const jeffVictim = args[0].replace(/[^\d]/g, "");
     const user = await client.users.cache.get(jeffVictim) || await client.users.fetch(jeffVictim);
     if (!user) return message.reply("That user doesn't exist!");
 
-    if (user.id === message.author.id) return message.reply("You tempjeff yourself!");
+    // if (user.id === message.author.id) return message.reply("You tempjeff yourself!");
     if (user.id === client.user.id) return message.reply("I can't tempjeff myself!");
 
 
@@ -55,8 +50,6 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
       return message.reply("You need to specify a time to tempjeff.");
     }
     const timeInSeconds = convertHumanReadableTimeToSeconds(time);
-    console.log("timeInSeconds");
-    console.log(timeInSeconds);
     if (!timeInSeconds) return message.reply("You need to specify a valid time to tempjeff.");
 
     // get server instance of user
@@ -87,7 +80,7 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
 exports.conf = {
   enabled: true,
   guildOnly: false,
-  aliases: ["tempjeff, tempjeffrey"],
+  aliases: ["tempjeff", "tempjeffrey"],
   permLevel: "Moderator"
 };
 

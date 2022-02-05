@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 // get process env password
-require('dotenv').config();
+require("dotenv").config();
 
 mongoose.connect(`mongodb+srv://Root:${process.env.MONGO_PASSWORD}@cluster0.lspds.mongodb.net/jeffreyfier?retryWrites=true&w=majority`, {}).then(() => {
   const logger = require("./modules/Logger.js");
-  logger.log('Connected to MongoDB');
-
+  logger.log("Connected to MongoDB");
+  
   if (Number(process.version.slice(1).split(".")[0]) < 16) throw new Error("Node 16.x or higher is required. Update Node on your system.");
   require("dotenv").config();
-
+  
   // Load up the discord.js library
   const { Client, Collection } = require("discord.js");
   // We also load the rest of the things we need in this file:
@@ -51,6 +51,7 @@ mongoose.connect(`mongodb+srv://Root:${process.env.MONGO_PASSWORD}@cluster0.lspd
     const commands = readdirSync("./commands/").filter(file => file.endsWith(".js"));
     for (const file of commands) {
       const props = require(`./commands/${file}`);
+
       logger.log(`Loading Command: ${props.help.name}. 👌`, "log");
       client.container.commands.set(props.help.name, props);
       props.conf.aliases.forEach(alias => {

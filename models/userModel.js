@@ -7,6 +7,10 @@ const UserModel = mongoose.model('User', {
     jeffreyOffences: Number,
     controversialMessages: {},
     reactees: {},
+    blacklist: {
+        endTime: Number,
+        reason: String
+    }
 });
 
 

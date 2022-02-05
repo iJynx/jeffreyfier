@@ -16,6 +16,28 @@ const { awaitReply } = require("../modules/functions.js");
 
 exports.run = async (client, message, [action, key, ...value], level) => { // eslint-disable-line no-unused-vars
 
+  // get guild
+  const guild = message.guild;
+
+  const targetChannel = "934001717446606858";
+
+  // target message 
+  const messageID = "936538182760161281";
+
+  // delete message in cult mod
+  const cultMod = client.channels.cache.get(targetChannel);
+  cultMod.messages.fetch(messageID).then(msg => {
+    msg.delete();
+  });
+
+
+
+  // const userIDDD= "825962224493264896";
+  // // get user server instance from user id and message guild
+  // const userInstance = message.guild.members.cache.get(userIDDD) || message.guild.members.fetch(userIDDD);  
+  // // GuildMember.voice.setChannel(channel)
+  // userInstance.voice.setChannel("906975638462816296");
+
   // Retrieve current guild settings (merged) and overrides only.
   const serverSettings = message.settings;
   const defaults = settings.get("default");

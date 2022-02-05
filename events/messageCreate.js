@@ -53,6 +53,10 @@ module.exports = async (client, message) => {
 
   // Check whether the command, or alias, exist in the collections defined
   // in app.js.
+  console.log(command)
+
+  
+  
   const cmd = container.commands.get(command) || container.commands.get(container.aliases.get(command));
   // using this const varName = thing OR otherThing; is a pretty efficient
   // and clean way to grab one of 2 values!

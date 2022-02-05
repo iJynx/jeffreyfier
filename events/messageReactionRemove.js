@@ -28,9 +28,10 @@ module.exports = async (client, reaction, user) => {
 
         // decrement jeffreyReactions and reactee and controversialMessages
         authorObj.jeffreyReactions--;
-
-        if (authorObj.controversialMessages[message.id])
-            authorObj.controversialMessages[message.id]--;
+        // get channel id
+        const channelID = message.channel.id;
+        if (authorObj.controversialMessages[channelID + "-" + message.id])
+            authorObj.controversialMessages[channelID + "-" + message.id]--;
 
         // if reactee has less than 3 reactions remove it, else log it
         if (authorObj.reactees[reactee]) {
