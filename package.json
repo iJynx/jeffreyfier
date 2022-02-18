@@ -7,7 +7,7 @@
     "start": "node index.js"
   },
   "engines": {
-    "node": ">=16"
+    "node": "16.14.0"
   },
   "author": "Evelyne Lachance <eslachance@gmail.com> (http://evie.codes)",
   "contributors": [
