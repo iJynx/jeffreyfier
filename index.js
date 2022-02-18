@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 // get process env password
 require("dotenv").config();
-
+console.log("bruh again")
 console.log("process.env.OWNER:", process.env.OWNER)
 console.log("process.env.MONGO_URI:", process.env.MONGO_URI)
 mongoose
