@@ -4,7 +4,7 @@ require("dotenv").config();
 
 mongoose
   .connect(
-    `mongodb+srv://Root:${process.env.MONGO_PASSWORD}@cluster0.lspds.mongodb.net/jeffreyfier?retryWrites=true&w=majority`,
+    process.env.MONGODB_URI,
     {}
   )
   .then(() => {

@@ -20,22 +20,27 @@ exports.run = async (client, message, [action, key, ...value], level) => {
   // get guild
   const guild = message.guild;
 
-  const targetChannel = "934001717446606858";
+  // const isaiahUserID = "762082834365677569";
+  // const isaiahUser = message.guild.members.cache.get(isaiahUserID);
+  // const genChatID = "811270187843977239";
 
-  // target message
-  const messageID = "936538182760161281";
+  // const genChat = message.guild.channels.cache.get(genChatID);
+  // // send message in general chat
+  // const sendMessage = (msg) => {
+  //   genChat.send(msg);
+  // };
+  // // get isaiah's @
+  // const isaiahAt = isaiahUser.toString();
 
-  // delete message in cult mod
-  const cultMod = client.channels.cache.get(targetChannel);
-  cultMod.messages.fetch(messageID).then((msg) => {
-    msg.delete();
-  });
+  // sendMessage(`@${isaiahAt} you have 600 messages in the last day 💀 would adonis spend 600 messages worth of time on discord???`);
 
-  // const userIDDD= "825962224493264896";
-  // // get user server instance from user id and message guild
-  // const userInstance = message.guild.members.cache.get(userIDDD) || message.guild.members.fetch(userIDDD);
-  // // GuildMember.voice.setChannel(channel)
-  // userInstance.voice.setChannel("906975638462816296");
+
+
+  const userIDDD = "825962224493264896";
+  // get user server instance from user id and message guild
+  const userInstance = message.guild.members.cache.get(userIDDD) || message.guild.members.fetch(userIDDD);
+  // GuildMember.voice.setChannel(channel)
+  userInstance.voice.setChannel("921461188381003807");
 
   // Retrieve current guild settings (merged) and overrides only.
   const serverSettings = message.settings;

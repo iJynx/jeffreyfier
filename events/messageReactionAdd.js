@@ -8,6 +8,11 @@ const UserModel = require("../models/userModel");
 module.exports = async (client, reaction, user) => {
   // check if the reaction is a custom emote
 
+  // start timer
+  const start = Date.now();
+
+
+
   // check if reaction is tick emote or not
   const tick = "%E2%9C%85";
   const cross = "%E2%9D%8C";
@@ -60,36 +65,25 @@ module.exports = async (client, reaction, user) => {
       }
     }
   }
-
   const reactee = user.id;
   if (reaction.emoji.identifier != config.jeffreyReaction) return;
 
-  // get message object
-  const message = await reaction.message.fetch();
+  // get message object without fetching
+  const message = reaction.message;
+
+  // const message = await reaction.message.fetch();
   // get author username
   const author = message.author.username;
   const settings = (message.settings = getSettings(message.guild));
-
-  // get author id
   const authorID = message.author.id;
   const userObj = await UserModel.findOne({ userID: authorID });
-
-  // get roles of authorID
   const roles = message.member.roles.cache.map((r) => r.id);
-  // find channel the message was sent it
-
   const channel = message.channel.id;
 
-  // if author contains any of the godRoles, or doesnt have member role, quit
-  if (
-    roles.some((r) => config.godRoles.includes(r)) ||
-    !roles.includes(config.memberRole)
-  ) {
+  if (roles.some((r) => config.godRoles.includes(r)) || !roles.includes(config.memberRole)) {
     return;
   }
-  console.log("1");
 
-  // if doesn't exist create one
   if (!userObj) {
     const newUser = new UserModel({
       userID: authorID,
@@ -104,38 +98,49 @@ module.exports = async (client, reaction, user) => {
     });
     newUser.save();
   } else {
-    console.log("11");
-
     // if reactee has less than 3 reactions add it, else log it
     if (!userObj.reactees[reactee]) {
       userObj.reactees[reactee] = 0;
     }
-    console.log("12");
     const reacteeReacts = userObj.reactees[reactee];
     if (userObj.reactees[reactee] >= settings.maxReactions) {
       return;
     }
-    console.log("13");
 
     userObj.reactees[reactee] = reacteeReacts + 1;
     const authorAt = message.author;
 
     userObj.jeffreyReactions++;
-    // add to controversial messages
-    console.log("14");
 
     if (!userObj.controversialMessages[channel + "-" + message.id]) {
       userObj.controversialMessages[channel + "-" + message.id] = 0;
     }
-    console.log("15");
 
+
+
+
+    
     userObj.controversialMessages[channel + "-" + message.id]++;
-    // logger.log(`${JSON.stringify(userObj)}`, "log");
-    console.log("2");
 
     // get threshold
     const threshold = settings.jeffreyThreshold;
     // print threshold
+    // mark modified
+    // refetch jeffrey reactions from database
+
+
+    userObj.markModified("reactees");
+    userObj.markModified("controversialMessages");
+    userObj.markModified("jeffreyReactions");
+    userObj.markModified("jeffreyOffences");
+    await userObj.save();
+    // find time from start
+    const time = Date.now() - start;
+
+    logger.log("reactee is " + reactee);
+    logger.log("reactee has " +  userObj.reactees[reactee] + " reactions");
+    logger.log("author has " + (userObj.jeffreyReactions - 1) + " jeffrey reactions");
+    logger.log("time: " + time);
 
     if (userObj.jeffreyReactions >= threshold) {
       // author at
@@ -155,12 +160,11 @@ module.exports = async (client, reaction, user) => {
       try {
         // send message to author telling them they've been automatically jeffried
         authorAt.send(
-          `You have been automatically jeffrified for getting ${userObj.jeffreyReactions} jeffrey votes. Please wait for mods to revoke this or for the council will now vote...`
+          "You have been placed in the Jeffrey zoo in Hamza's Cult. Familiarise yourself with the #rules-and-guidelines. If you want to re-join the server, please write a message in #jeffrey-zoo showing us that you can follow the rules, where it'll be reviewed by the mods. Additionally an automatic vote has been initiated and if your ban is considered to not be justified by the disciples you will be automatically placed back into the masses within an hour(usually). Failure to show that you can act maturely will result in a ban."
         );
       } catch {
         logger.log("cant send dm to user");
       }
-      console.log("3");
 
       // add role jeffreyRole from config
       message.guild.members.cache.get(authorID).roles.add(config.jeffreyRole);
@@ -169,12 +173,9 @@ module.exports = async (client, reaction, user) => {
 
       // reset jeffries to 0
       userObj.jeffreyReactions = 0;
-
-      // save asap
-      userObj.markModified("reactees");
-      userObj.markModified("controversialMessages");
+      // save
       userObj.markModified("jeffreyReactions");
-      userObj.save();
+      await userObj.save();
 
       // add log message in logs channel
       // get log channel based on ID
@@ -187,7 +188,6 @@ module.exports = async (client, reaction, user) => {
           `${author} has been jeffrified for ${userObj.jeffreyReaction} offences.`,
           "log"
         );
-        console.log("4");
 
         //  mention reactee
         const reacteeMention = message.guild.members.cache
@@ -237,46 +237,6 @@ module.exports = async (client, reaction, user) => {
                     link: `https://discordapp.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id}`,
                     count: userObj.controversialMessages[messageFDB],
                   });
-                }).catch(() => {
-                  console.log("looking for " + userObj.userID);
-                  const msg_filter = (m) => m.author.id === userObj.userID;
-                  const channelOBJ = client.channels.cache.get(channelID) || client.channels.fetch(channelID);
-
-                  // print channel obj id
-                  console.log("found chanel obj:" + channelOBJ.id);
-
-                  const messages = channelOBJ.awaitMessages(msg_filter, {
-                    max: 1,
-                    time: 1,
-                  });
-
-                  messages.then((msgs) => {
-                    console.log("found messages");
-                    console.log(msgs);
-                    console.log(msgs.first());
-                    console.log(msgs.first().content);
-                  }).catch(() => {
-                    console.log("no messages found");
-                  }).ti
-
-
-                  // .then((msgs) => {
-                  //   console.log("found " + msgs.size);
-                  //   const msg = msgs.find((m) => m.id === messageID);
-                  //   topMessagesArray.push({
-                  //     channel: msg.channel.name,
-                  //     message: msg.content,
-                  //     link: `https://discordapp.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id}`,
-                  //     count: userObj.controversialMessages[messageFDB],
-                  //   });
-                  // }).catch(() => {
-                  //   console.log("failed " + userObj.userID);
-                  //   topMessagesArray.push({
-                  //     message: "Error loading message. Probably deleted.",
-                  //     link: "",
-                  //     count: userObj.controversialMessages[messageFDB],
-                  //   });
-                  // });
                 })
             );
           }
@@ -289,10 +249,8 @@ module.exports = async (client, reaction, user) => {
             });
           }
         }
-        console.log("5");
 
         await Promise.all(promises);
-        console.log("6");
 
         // limit each message content to 300 characaters and if exceedes add ...
         for (const message of topMessagesArray) {
@@ -336,7 +294,6 @@ module.exports = async (client, reaction, user) => {
         const voteMessage = await jeffreyLogsChannel.send({
           embeds: [voteEmbed],
         });
-        console.log("7");
 
         // add reactions
         await voteMessage.react("✅");
