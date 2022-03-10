@@ -45,9 +45,9 @@ const config = {
       "Say hello to {{user}}, everyone! We all need a warm welcome sometimes :D",
     welcomeEnabled: "false",
     maxReactions: 3,
+    jeffreyThreshold: 15,
   },
   
-  jeffreyThreshold: 15,
 
   // PERMISSION LEVEL DEFINITIONS.
   permLevels: [

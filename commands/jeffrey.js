@@ -69,8 +69,15 @@ exports.run = async (client, message, args, level) => {
         message.message = message.message.slice(0, 300) + "...";
       }
     }
+    // get settings
+    const overrides = {
+      ...settings.get(message.guild.id),
+      ...settings.get("default"),
+    };
+      
+      
+      // settings.get(message.guild.id) || settings.get("default");
 
-    const overrides = settings.get(message.guild.id);
     const responseEmbed = new MessageEmbed()
       .setColor("#3333FF")
       .setTitle(`${author}'s Jeffrey stats`)
