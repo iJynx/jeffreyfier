@@ -121,8 +121,6 @@ module.exports = async (client, reaction, user) => {
       multiplier = 5;
     } else if (reacteeRoles.includes(config.acolyteRole)) {
       multiplier = 2;
-    } else if (reacteeRoles.includes(config.memberRole)) {
-      multiplier = 1;
     }
 
     userObj.reactees[reactee] = reacteeReacts + 1;

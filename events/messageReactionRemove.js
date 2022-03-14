@@ -24,19 +24,17 @@ module.exports = async (client, reaction, user) => {
     }
     const reacteeGuildObject = await message.guild.members.fetch(reactee);
     const reacteeRoles = reacteeGuildObject.roles.cache.map((role) => role.id);
-
+    let multiplier = 1;
     if (reacteeRoles.includes(config.discipleRole)) {
         multiplier = 5;
     } else if (reacteeRoles.includes(config.acolyteRole)) {
         multiplier = 2;
-    } else if (reacteeRoles.includes(config.memberRole)) {
-        multiplier = 1;
     }
 
     const authorObj = await UserModel.findOne({ userID: authorID });
     try {
         // decrement jeffreyReactions and reactee and controversialMessages
-        authorObj.jeffreyReactions--;
+        authorObj.jeffreyReactions -= 1 * multiplier;
         // get channel id
         const channelID = message.channel.id;
         if (authorObj.controversialMessages[channelID + "-" + message.id])
