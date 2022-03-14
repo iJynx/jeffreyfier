@@ -125,7 +125,7 @@ module.exports = async (client, reaction, user) => {
       multiplier = 1;
     }
 
-    userObj.reactees[reactee] = reacteeReacts + 1 * multiplier;
+    userObj.reactees[reactee] = reacteeReacts + 1;
     const authorAt = message.author;
 
     userObj.jeffreyReactions = userObj.jeffreyReactions + 1 * multiplier;

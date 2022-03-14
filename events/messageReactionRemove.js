@@ -22,8 +22,8 @@ module.exports = async (client, reaction, user) => {
         console.log("leaving cus god role");
         return;
     }
-
-    const reacteeRoles = user.roles.cache.map((role) => role.id);
+    const reacteeGuildObject = await message.guild.members.fetch(reactee);
+    const reacteeRoles = reacteeGuildObject.roles.cache.map((role) => role.id);
 
     if (reacteeRoles.includes(config.discipleRole)) {
         multiplier = 5;
@@ -44,7 +44,7 @@ module.exports = async (client, reaction, user) => {
 
         // if reactee has less than 3 reactions remove it, else log it
         if (authorObj.reactees[reactee]) {
-            authorObj.reactees[reactee] -= multiplier;
+            authorObj.reactees[reactee] -= 1;
         }
 
         // if jeffreyReactions is less than 0, remove the user
