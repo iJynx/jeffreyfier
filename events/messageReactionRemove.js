@@ -23,7 +23,7 @@ module.exports = async (client, reaction, user) => {
         return;
     }
 
-    const reacteeRoles = user.roles;
+    const reacteeRoles = user.roles.cache.map((role) => role.id);
 
     if (reacteeRoles.includes(config.discipleRole)) {
         multiplier = 5;

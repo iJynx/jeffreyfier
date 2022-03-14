@@ -5,7 +5,7 @@ const config = require("../config.js");
 const { MessageEmbed } = require("discord.js");
 const UserModel = require("../models/userModel");
 // get reaction emote ID
-module.exports = async (client, reaction, reacteeUser) => {
+module.exports = async (client, reaction, user) => {
   // check if the reaction is a custom emote
 
   // start timer
@@ -17,11 +17,11 @@ module.exports = async (client, reaction, reacteeUser) => {
   if (reaction.emoji.identifier == tick || reaction.emoji.identifier == cross) {
     // check reaction is in jeffreyLog channel
     // check reaction isnt by a bot
-    if (reaction.message.channel.id != config.jeffreyLog || reacteeUser.bot) return;
+    if (reaction.message.channel.id != config.jeffreyLog || user.bot) return;
 
     // find reactions by reactee on message
     const message = await reaction.message.fetch();
-    const reactee = reacteeUser.id;
+    const reactee = user.id;
     // get reactions of tick
     const json = message.reactions.cache.toJSON();
     const tickReactions = json[0].users.reaction.count;
@@ -63,7 +63,7 @@ module.exports = async (client, reaction, reacteeUser) => {
       }
     }
   }
-  const reactee = reacteeUser.id;
+  const reactee = user.id;
   if (reaction.emoji.identifier != config.jeffreyReaction) return;
 
   // get message object without fetching
@@ -77,7 +77,7 @@ module.exports = async (client, reaction, reacteeUser) => {
   const userObj = await UserModel.findOne({ userID: authorID });
   const roles = message.member.roles.cache.map((r) => r.id);
   const channel = message.channel.id;
-  const reacteeRoles = reacteeUser.roles.cache.map((r) => r.id);
+  const reacteeRoles = user.roles.cache.map((r) => r.id);
 
   if (roles.some((r) => config.godRoles.includes(r)) || !roles.includes(config.memberRole)) {
     return;
