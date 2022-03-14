@@ -78,8 +78,8 @@ module.exports = async (client, reaction, user) => {
   const roles = message.member.roles.cache.map((r) => r.id);
   const channel = message.channel.id;
 
-  // fetch reactee object from discord
-  const reacteeObj = await client.users.fetch(reactee);
+  // fetch reactee object from server
+  const reacteeObj = await message.guild.members.fetch(reactee);
 
   // get reactee roles
   const reacteeRoles = reacteeObj.roles.cache.map((r) => r.id);
