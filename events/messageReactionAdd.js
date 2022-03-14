@@ -77,7 +77,12 @@ module.exports = async (client, reaction, user) => {
   const userObj = await UserModel.findOne({ userID: authorID });
   const roles = message.member.roles.cache.map((r) => r.id);
   const channel = message.channel.id;
-  const reacteeRoles = user.roles.cache.map((r) => r.id);
+
+  // fetch reactee object from discord
+  const reacteeObj = await client.users.fetch(reactee);
+
+  // get reactee roles
+  const reacteeRoles = reacteeObj.roles.cache.map((r) => r.id);
 
   if (roles.some((r) => config.godRoles.includes(r)) || !roles.includes(config.memberRole)) {
     return;
