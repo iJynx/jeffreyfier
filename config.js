@@ -148,19 +148,14 @@ const config = {
     },
   ],
 
-  // jeffreyLog: "933939282404605953",
-  // jeffreyReaction: "jeffrey:933348007318012005",
-  // jeffreyRole: "933348102566461450",
-  // memberRole: "933348083637571624",
-  // godRoles: [
-  //   "933352202913869844",
-  //   "933353842756698155"
-  // ],
+  jeffreyRole: "920614534765498389",
+  memberRole: "811280284481355889",
+  acolyteRole: "941349299931971605",
+  discipleRole: "865517302195159040",
+
 
   jeffreyLog: "934001717446606858",
   jeffreyReaction: "zoo:939450705415135232",
-  jeffreyRole: "920614534765498389",
-  memberRole: "811280284481355889",
   commandsChannel: "934249259094638622",
   godRoles: [
     "865517302195159040",

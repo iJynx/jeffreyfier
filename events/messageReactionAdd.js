@@ -5,13 +5,11 @@ const config = require("../config.js");
 const { MessageEmbed } = require("discord.js");
 const UserModel = require("../models/userModel");
 // get reaction emote ID
-module.exports = async (client, reaction, user) => {
+module.exports = async (client, reaction, reacteeUser) => {
   // check if the reaction is a custom emote
 
   // start timer
   const start = Date.now();
-
-
 
   // check if reaction is tick emote or not
   const tick = "%E2%9C%85";
@@ -19,11 +17,11 @@ module.exports = async (client, reaction, user) => {
   if (reaction.emoji.identifier == tick || reaction.emoji.identifier == cross) {
     // check reaction is in jeffreyLog channel
     // check reaction isnt by a bot
-    if (reaction.message.channel.id != config.jeffreyLog || user.bot) return;
+    if (reaction.message.channel.id != config.jeffreyLog || reacteeUser.bot) return;
 
     // find reactions by reactee on message
     const message = await reaction.message.fetch();
-    const reactee = user.id;
+    const reactee = reacteeUser.id;
     // get reactions of tick
     const json = message.reactions.cache.toJSON();
     const tickReactions = json[0].users.reaction.count;
@@ -65,7 +63,7 @@ module.exports = async (client, reaction, user) => {
       }
     }
   }
-  const reactee = user.id;
+  const reactee = reacteeUser.id;
   if (reaction.emoji.identifier != config.jeffreyReaction) return;
 
   // get message object without fetching
@@ -79,6 +77,7 @@ module.exports = async (client, reaction, user) => {
   const userObj = await UserModel.findOne({ userID: authorID });
   const roles = message.member.roles.cache.map((r) => r.id);
   const channel = message.channel.id;
+  const reacteeRoles = reacteeUser.roles.cache.map((r) => r.id);
 
   if (roles.some((r) => config.godRoles.includes(r)) || !roles.includes(config.memberRole)) {
     return;
@@ -99,6 +98,10 @@ module.exports = async (client, reaction, user) => {
     newUser.save();
   } else {
     // if reactee has less than 3 reactions add it, else log it
+  
+
+    // find if reactee is disciple, acolyte, or member
+
     if (!userObj.reactees[reactee]) {
       userObj.reactees[reactee] = 0;
     }
@@ -106,35 +109,35 @@ module.exports = async (client, reaction, user) => {
     if (userObj.reactees[reactee] >= settings.maxReactions) {
       return;
     }
+    let multiplier = 1;
+    if (reacteeRoles.includes(config.discipleRole)) {
+      multiplier = 5;
+    } else if (reacteeRoles.includes(config.acolyteRole)) {
+      multiplier = 2;
+    } else if (reacteeRoles.includes(config.memberRole)) {
+      multiplier = 1;
+    }
 
-    userObj.reactees[reactee] = reacteeReacts + 1;
+    userObj.reactees[reactee] = reacteeReacts + 1 * multiplier;
     const authorAt = message.author;
 
-    userObj.jeffreyReactions++;
+    userObj.jeffreyReactions = userObj.jeffreyReactions + 1 * multiplier;
 
     if (!userObj.controversialMessages[channel + "-" + message.id]) {
       userObj.controversialMessages[channel + "-" + message.id] = 0;
     }
 
+    userObj.controversialMessages[channel + "-" + message.id] = userObj.controversialMessages[
+      channel + "-" + message.id
+    ] + 1 * multiplier;
 
-
-
-    
-    userObj.controversialMessages[channel + "-" + message.id]++;
-
-    // get threshold
     const threshold = settings.jeffreyThreshold;
-    // print threshold
-    // mark modified
-    // refetch jeffrey reactions from database
-
 
     userObj.markModified("reactees");
     userObj.markModified("controversialMessages");
     userObj.markModified("jeffreyReactions");
-    userObj.markModified("jeffreyOffences");
+
     await userObj.save();
-    // find time from start
     const time = Date.now() - start;
 
     logger.log("reactee is " + reactee);
@@ -144,6 +147,11 @@ module.exports = async (client, reaction, user) => {
 
     if (userObj.jeffreyReactions >= threshold) {
       // author at
+
+      // increment jeffrey offences
+      userObj.jeffreyOffences = userObj.jeffreyOffences + 1;
+      // mark as modified
+      userObj.markModified("jeffreyOffences");
 
       message.channel
         .send(
@@ -185,7 +193,7 @@ module.exports = async (client, reaction, user) => {
 
       if (jeffreyLogsChannel) {
         logger.log(
-          `${author} has been jeffrified for ${userObj.jeffreyReaction} offences.`,
+          `${author} has been jeffrified for ${userObj.jeffreyReaction} reactions.`,
           "log"
         );
 
@@ -258,6 +266,10 @@ module.exports = async (client, reaction, user) => {
             message.message = message.message.slice(0, 300) + "...";
           }
         }
+
+        // sort them
+        topMessagesArray.sort((a, b) => b.count - a.count);
+
         const voteEmbed = new MessageEmbed()
           .setColor("#FF3333")
           .setTitle(
