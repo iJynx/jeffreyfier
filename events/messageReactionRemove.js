@@ -23,6 +23,16 @@ module.exports = async (client, reaction, user) => {
         return;
     }
 
+    const reacteeRoles = user.roles;
+
+    if (reacteeRoles.includes(config.discipleRole)) {
+        multiplier = 5;
+    } else if (reacteeRoles.includes(config.acolyteRole)) {
+        multiplier = 2;
+    } else if (reacteeRoles.includes(config.memberRole)) {
+        multiplier = 1;
+    }
+
     const authorObj = await UserModel.findOne({ userID: authorID });
     try {
         // decrement jeffreyReactions and reactee and controversialMessages
@@ -30,11 +40,11 @@ module.exports = async (client, reaction, user) => {
         // get channel id
         const channelID = message.channel.id;
         if (authorObj.controversialMessages[channelID + "-" + message.id])
-            authorObj.controversialMessages[channelID + "-" + message.id]--;
+            authorObj.controversialMessages[channelID + "-" + message.id] -= multiplier;
 
         // if reactee has less than 3 reactions remove it, else log it
         if (authorObj.reactees[reactee]) {
-            authorObj.reactees[reactee]--;
+            authorObj.reactees[reactee] -= multiplier;
         }
 
         // if jeffreyReactions is less than 0, remove the user
