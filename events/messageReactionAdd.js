@@ -115,6 +115,8 @@ module.exports = async (client, reaction, user) => {
       return;
     }
     let multiplier = 1;
+    console.log("reactee name: " + reacteeObj.displayName);
+    console.log("reactee roles: " + reacteeRoles);
     if (reacteeRoles.includes(config.discipleRole)) {
       multiplier = 5;
     } else if (reacteeRoles.includes(config.acolyteRole)) {
