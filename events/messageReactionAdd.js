@@ -67,11 +67,11 @@ module.exports = async (client, reaction, user) => {
   if (reaction.emoji.identifier != config.jeffreyReaction) return;
 
   // get message object without fetching
-  const message = reaction.message;
+  const message = await reaction.message;
 
   // const message = await reaction.message.fetch();
   // get author username
-  const author = message.author.username;
+  const author = await message.author.username;
   const settings = (message.settings = getSettings(message.guild));
   const authorID = message.author.id;
   const userObj = await UserModel.findOne({ userID: authorID });
