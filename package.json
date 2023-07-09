@@ -23,7 +23,7 @@
     "enmap": "^5.8.5",
     "mongodb": "^4.3.1",
     "mongoose": "^6.1.7",
-    "nodemon": "^2.0.15"
+    "nodemon": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^7.30.0",
